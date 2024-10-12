@@ -1,0 +1,15 @@
+{
+  "name": "jest-test-xml",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "xml2js": "^0.6.2"
+  }
+}

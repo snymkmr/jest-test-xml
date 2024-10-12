@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <mandatoryTag1>Value1</mandatoryTag1>
+  <mandatoryTag2>Value2</mandatoryTag2>
+  <mandatoryTag3>Value3</mandatoryTag3>
+  <optionalTag1>OptionalValue1</optionalTag1>
+  <optionalTag2></optionalTag2>
+</root>
