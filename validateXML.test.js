@@ -3,8 +3,45 @@ const xml2js = require('xml2js');
 
 const parser = new xml2js.Parser();
 
-// Define your mandatory tags here
-const mandatoryTags = ['transactionId', 'mandatoryTag1', 'mandatoryTag2', 'mandatoryTag3'];
+const mandatoryTags = {
+  transactionId: true,
+  mandatoryTag1: true,
+  mandatoryTag2: {
+    subTag1: {
+      subSubTag1: true,  // Nested level 3
+      subSubTag2: {
+        subSubSubTag1: true,  // Nested level 4
+      },
+    },
+  },
+  mandatoryTag3: true,
+};
+
+// Recursive function to validate deeply nested tags
+const validateTags = (transaction, tagStructure, parentTag = '') => {
+  return Object.keys(tagStructure).reduce((issues, tag) => {
+    const fullTagPath = parentTag ? `${parentTag} -> ${tag}` : tag;
+
+    if (typeof tagStructure[tag] === 'object') {
+      // Recursively validate nested tags
+      if (!transaction[tag]) {
+        issues.push(`Missing tag: ${fullTagPath}`);
+      } else {
+        issues.push(
+          ...validateTags(transaction[tag][0], tagStructure[tag], fullTagPath)
+        );
+      }
+    } else {
+      // Simple tag validation
+      if (!transaction[tag]) {
+        issues.push(`Missing tag: ${fullTagPath}`);
+      } else if (transaction[tag][0] === '') {
+        issues.push(`Empty value for tag: ${fullTagPath}`);
+      }
+    }
+    return issues;
+  }, []);
+};
 
 describe('XML Transaction Validation', () => {
   let transactions = [];
@@ -25,18 +62,6 @@ describe('XML Transaction Validation', () => {
     }
   });
 
-  const validateTransaction = (transaction) => {
-    const transactionId = transaction.transactionId ? transaction.transactionId[0] : 'Unknown';
-    return mandatoryTags.reduce((issues, tag) => {
-      if (!Object.prototype.hasOwnProperty.call(transaction, tag)) {
-        issues.push(`Transaction ${transactionId}: Missing tag - ${tag}`);
-      } else if (transaction[tag][0] === '') {
-        issues.push(`Transaction ${transactionId}: Empty value for tag - ${tag}`);
-      }
-      return issues;
-    }, []);
-  };
-
   test('XML file should contain transactions', () => {
     expect(transactions.length).toBeGreaterThan(0);
   });
@@ -46,16 +71,20 @@ describe('XML Transaction Validation', () => {
 
     transactions.forEach((transaction) => {
       const transactionId = transaction.transactionId ? transaction.transactionId[0] : 'Unknown';
-      const issues = validateTransaction(transaction);
+      const issues = validateTags(transaction, mandatoryTags);
 
       if (issues.length > 0) {
         console.log(`\nIssues found in transaction ${transactionId}:`);
         issues.forEach(issue => console.log(`- ${issue}`));
-        allIssues.push(...issues);  // Add all issues from this transaction to the global list
+        allIssues.push(...issues.map(issue => `Transaction ${transactionId}: ${issue}`));
       }
     });
 
-    // If there are any issues at all, the test will fail
+    if (allIssues.length > 0) {
+      console.log(`\nAll Issues Found:\n${allIssues.join('\n')}`);
+    }
+
+    // Assert at the end when all transactions are processed
     expect(allIssues).toEqual([], `Validation failed. Issues: \n${allIssues.join('\n')}`);
   });
 });

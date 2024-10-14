@@ -3,20 +3,105 @@
   <transaction>
     <transactionId>T001</transactionId>
     <mandatoryTag1>Value1</mandatoryTag1>
-    <mandatoryTag2>Value2</mandatoryTag2>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1>SubSubValue1</subSubTag1>
+        <subSubTag2>
+          <subSubSubTag1>SubSubSubValue1</subSubSubTag1>
+        </subSubTag2>
+      </subTag1>
+    </mandatoryTag2>
     <mandatoryTag3>Value3</mandatoryTag3>
-    <optionalTag1>OptionalValue1</optionalTag1>
   </transaction>
+
   <transaction>
     <transactionId>T002</transactionId>
     <mandatoryTag1>Value1</mandatoryTag1>
-    <mandatoryTag2></mandatoryTag2>
-    <optionalTag2>OptionalValue2</optionalTag2>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1>SubSubValue1</subSubTag1>
+        <subSubTag2>
+          <subSubSubTag1></subSubSubTag1> <!-- Empty value -->
+        </subSubTag2>
+      </subTag1>
+    </mandatoryTag2>
+    <mandatoryTag3></mandatoryTag3> <!-- Empty mandatory tag -->
   </transaction>
+
   <transaction>
     <transactionId>T003</transactionId>
     <mandatoryTag1>Value1</mandatoryTag1>
-    <mandatoryTag2>Value2</mandatoryTag2>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1>SubSubValue1</subSubTag1>
+        <subSubTag2>
+          <subSubSubTag1>SubSubSubValue1</subSubSubTag1>
+        </subSubTag2>
+        <subSubTag3>SubSubValue3</subSubTag3> <!-- Additional SubSubTag -->
+      </subTag1>
+    </mandatoryTag2>
+    <mandatoryTag3>Value3</mandatoryTag3>
+  </transaction>
+
+  <transaction>
+    <transactionId>T004</transactionId>
+    <mandatoryTag1>Value1</mandatoryTag1>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1></subSubTag1> <!-- Empty SubSubTag -->
+        <subSubTag2>
+          <subSubSubTag1>SubSubSubValue1</subSubSubTag1>
+        </subSubTag2>
+      </subTag1>
+    </mandatoryTag2>
+    <mandatoryTag3>Value3</mandatoryTag3>
+  </transaction>
+
+  <transaction>
+    <transactionId>T005</transactionId>
+    <mandatoryTag1>Value1</mandatoryTag1>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1>SubSubValue1</subSubTag1>
+        <subSubTag2>
+          <subSubSubTag1>SubSubSubValue1</subSubSubTag1>
+        </subSubTag2>
+        <subSubTag3>SubSubValue3</subSubTag3>
+        <subSubTag4>SubSubValue4</subSubTag4> <!-- Deeper nested tags -->
+      </subTag1>
+    </mandatoryTag2>
+    <mandatoryTag3>Value3</mandatoryTag3>
     <optionalTag1>OptionalValue1</optionalTag1>
   </transaction>
+
+  <transaction>
+    <transactionId>T006</transactionId>
+    <mandatoryTag1>Value1</mandatoryTag1>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1>SubSubValue1</subSubTag1>
+        <subSubTag2>
+          <subSubSubTag1>SubSubSubValue1</subSubSubTag1>
+        </subSubTag2>
+      </subTag1>
+      <subTag2>SubValue2</subTag2> <!-- Additional subTag -->
+    </mandatoryTag2>
+    <mandatoryTag3>Value3</mandatoryTag3>
+  </transaction>
+
+  <!-- Add more transactions as needed for testing -->
+  <transaction>
+    <transactionId>T007</transactionId>
+    <mandatoryTag1>Value1</mandatoryTag1>
+    <mandatoryTag2>
+      <subTag1>
+        <subSubTag1></subSubTag1> <!-- Empty SubSubTag -->
+        <subSubTag2>
+          <subSubSubTag1></subSubSubTag1> <!-- Empty SubSubSubTag -->
+        </subSubTag2>
+      </subTag1>
+    </mandatoryTag2>
+    <mandatoryTag3></mandatoryTag3> <!-- Empty mandatoryTag3 -->
+  </transaction>
+
 </root>
