@@ -1,21 +1,8 @@
 const fs = require('fs');
 const xml2js = require('xml2js');
+const mandatoryTags = require('./tagStructure');
 
 const parser = new xml2js.Parser();
-
-const mandatoryTags = {
-  transactionId: true,
-  mandatoryTag1: true,
-  mandatoryTag2: {
-    subTag1: {
-      subSubTag1: true,  // Nested level 3
-      subSubTag2: {
-        subSubSubTag1: true,  // Nested level 4
-      },
-    },
-  },
-  mandatoryTag3: true,
-};
 
 // Recursive function to validate deeply nested tags
 const validateTags = (transaction, tagStructure, parentTag = '') => {
@@ -50,7 +37,7 @@ describe('XML Transaction Validation', () => {
     try {
       const xmlFile = await fs.promises.readFile('data/sample.xml', 'utf8');
       const xmlData = await parser.parseStringPromise(xmlFile);
-      
+
       if (xmlData && xmlData.root && Array.isArray(xmlData.root.transaction)) {
         transactions = xmlData.root.transaction;
         console.log(`Found ${transactions.length} transactions in the XML file.`);
