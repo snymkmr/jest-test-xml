@@ -30,12 +30,44 @@ const validateTags = (transaction, tagStructure, parentTag = '') => {
   }, []);
 };
 
+const validateCount = (transaction, parentTag = '') => {
+  const issues = [];
+
+  Object.keys(transaction).forEach((tag) => {
+    const fullTagPath = parentTag ? `${parentTag} -> ${tag}` : tag;
+
+    // Check if the tag has a count attribute
+    const attributes = transaction[tag]?.[0]?.$;
+    if (attributes?.count) {
+      const expectedCount = parseInt(attributes.count, 10);
+      const actualCount = Array.isArray(transaction[tag]) ? transaction[tag].length : 0;
+
+      if (actualCount !== expectedCount) {
+        issues.push(
+          `Count mismatch for tag: ${fullTagPath}. Expected: ${expectedCount}, Found: ${actualCount}`
+        );
+      }
+    }
+
+    // Recursively validate nested tags if they exist and are arrays
+    if (Array.isArray(transaction[tag])) {
+      transaction[tag].forEach((child) => {
+        if (typeof child === 'object') {
+          issues.push(...validateCount(child, fullTagPath));
+        }
+      });
+    }
+  });
+
+  return issues;
+};
+
 describe('XML Transaction Validation', () => {
   let transactions = [];
 
   beforeAll(async () => {
     try {
-      const xmlFile = await fs.promises.readFile('data/sample.xml', 'utf8');
+      const xmlFile = await fs.promises.readFile('data/countSample.xml', 'utf8');
       const xmlData = await parser.parseStringPromise(xmlFile);
 
       if (xmlData && xmlData.root && Array.isArray(xmlData.root.transaction)) {
@@ -74,4 +106,27 @@ describe('XML Transaction Validation', () => {
     // Assert at the end when all transactions are processed
     expect(allIssues).toEqual([], `Validation failed. Issues: \n${allIssues.join('\n')}`);
   });
+
+  test('Tags with count attributes should satisfy the total count', () => {
+    const allCountIssues = [];
+  
+    transactions.forEach((transaction) => {
+      const transactionId = transaction.transactionId ? transaction.transactionId[0] : 'Unknown';
+      const issues = validateCount(transaction);
+  
+      if (issues.length > 0) {
+        console.log(`\nCount issues found in transaction ${transactionId}:`);
+        issues.forEach(issue => console.log(`- ${issue}`));
+        allCountIssues.push(...issues.map(issue => `Transaction ${transactionId}: ${issue}`));
+      }
+    });
+  
+    if (allCountIssues.length > 0) {
+      console.log(`\nCount Mismatch Issues Found:\n${allCountIssues.join('\n')}`);
+    }
+  
+    expect(allCountIssues).toEqual([], `Count validation failed. Issues: \n${allCountIssues.join('\n')}`);
+  });
+ 
+
 });
