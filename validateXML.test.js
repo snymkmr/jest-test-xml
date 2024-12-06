@@ -38,11 +38,18 @@ const validateCount = (transaction, parentTag = '') => {
 
     // Check if the tag has a count attribute
     const attributes = transaction[tag]?.[0]?.$;
-    if (attributes?.count) {
+    if (attributes?.count !== undefined) {
       const expectedCount = parseInt(attributes.count, 10);
       const actualCount = Array.isArray(transaction[tag]) ? transaction[tag].length : 0;
 
-      if (actualCount !== expectedCount) {
+      // Special handling for count="0"
+      if (expectedCount === 0) {
+        if (actualCount > 0) {
+          issues.push(
+            `Tag with count="0" should not have child elements: ${fullTagPath}`
+          );
+        }
+      } else if (actualCount !== expectedCount) {
         issues.push(
           `Count mismatch for tag: ${fullTagPath}. Expected: ${expectedCount}, Found: ${actualCount}`
         );
@@ -61,6 +68,7 @@ const validateCount = (transaction, parentTag = '') => {
 
   return issues;
 };
+
 
 describe('XML Transaction Validation', () => {
   let transactions = [];
@@ -109,24 +117,24 @@ describe('XML Transaction Validation', () => {
 
   test('Tags with count attributes should satisfy the total count', () => {
     const allCountIssues = [];
-  
+
     transactions.forEach((transaction) => {
       const transactionId = transaction.transactionId ? transaction.transactionId[0] : 'Unknown';
       const issues = validateCount(transaction);
-  
+
       if (issues.length > 0) {
         console.log(`\nCount issues found in transaction ${transactionId}:`);
         issues.forEach(issue => console.log(`- ${issue}`));
         allCountIssues.push(...issues.map(issue => `Transaction ${transactionId}: ${issue}`));
       }
     });
-  
+
     if (allCountIssues.length > 0) {
       console.log(`\nCount Mismatch Issues Found:\n${allCountIssues.join('\n')}`);
     }
-  
+
     expect(allCountIssues).toEqual([], `Count validation failed. Issues: \n${allCountIssues.join('\n')}`);
   });
- 
+
 
 });
